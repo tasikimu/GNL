@@ -14,9 +14,12 @@
 
 void	ft_memdel(void **ap)
 {
-	if (ap != '\0' || ap != 0)
+	if (ap)
 	{
+		if(*ap)
+		{
 		free(*ap);
 		*ap = NULL;
+		}
 	}
 }

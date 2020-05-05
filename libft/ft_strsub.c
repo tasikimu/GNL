@@ -20,7 +20,7 @@ char	*ft_strsub(char const *s, unsigned int start, size_t len)
 		return (NULL);
 	if (!(sub = (char*)malloc(sizeof(char) * (len + 1))))
 		return (NULL);
-	if (sub != '\0')
+	if (sub)
 		ft_memcpy(sub, s + start, len);
 	sub[len] = 0;
 	return (sub);

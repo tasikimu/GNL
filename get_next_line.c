@@ -1,31 +1,31 @@
-#include "get_next_me.h"
+#include "get_next_line.h"
 #include "./libft/libft.h"
 
-int	get_next_me(const int a, char **me)
+int	get_next_line(const int a, char **me)
 {
-	static char	*p[2147483647];
+	static char	*ptr[2147483647];
 	char		buffersize[BUFF_SIZE + 1];
 	char		*temp;
 	ssize_t		i;
 	int			line_end;
 
-	if (a < 0 || (!p[a] && !(p[a] = ft_strnew(1))) || !me)
+	if (a < 0 || (!ptr[a] && !(ptr[a] = ft_strnew(1))) || !me)
 		return (-1);
-	while (!ft_strchr(p[a], '\n') && (i = read(a, buffersize, BUFF_SIZE)) > 0)
+	while (!ft_strchr(ptr[a], '\n') && (i = read(a, buffersize, BUFF_SIZE)) > 0)
 	{
 		buffersize[i] = '\0';
-		temp = p[a];
-		p[a] = ft_strjoin(p[a], buffersize);
+		temp = ptr[a];
+		ptr[a] = ft_strjoin(ptr[a], buffersize);
 		ft_strdel(&temp);
 	}
-	if (i == -1 || !*(temp = p[a]))
+	if (i == -1 || !*(temp = ptr[a]))
 		return (i == -1 ? -1 : 0);
-	if ((line_end = (ft_strchr(p[a], '\n') > 0)))
-		*me = ft_strsub(p[a], 0, ft_strchr(p[a], '\n') - p[a]);
+	if ((line_end = (ft_strchr(ptr[a], '\n') > 0)))
+		*me = ft_strsub(ptr[a], 0, ft_strchr(ptr[a], '\n') - ptr[a]);
 	else
-		*me = ft_strdup(p[a]);
-	p[a] = ft_strsub(p[a], (unsigned int)(ft_strlen(*me) + line_end),
-			(size_t)(ft_strlen(p[a]) - (ft_strlen(*me) + line_end)));
+		*me = ft_strdup(ptr[a]);
+	ptr[a] = ft_strsub(ptr[a], (unsigned int)(ft_strlen(*me) + line_end),
+			(size_t)(ft_strlen(ptr[a]) - (ft_strlen(*me) + line_end)));
 	ft_strdel(&temp);
-	return (!(!p[a] && !ft_strlen(*me)));
+	return (!(!ptr[a] && !ft_strlen(*me)));
 }
