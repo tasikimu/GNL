@@ -3,6 +3,6 @@
 # define BUFF_SIZE 32
 # include <unistd.h>
 
-int					get_next_line(const int a, char **me);
+int					get_next_line(const int a, char **line);
 
 #endif
