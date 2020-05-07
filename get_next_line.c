@@ -1,31 +1,65 @@
 #include "get_next_line.h"
 #include "./libft/libft.h"
 
-int	get_next_line(const int a, char **me)
+char	*storing(char *str)
 {
-	static char	*ptr[2147483647];
-	char		buffersize[BUFF_SIZE + 1];
-	char		*temp;
-	ssize_t		i;
-	int			line_end;
+	static char	*read;
 
-	if (a < 0 || (!ptr[a] && !(ptr[a] = ft_strnew(1))) || !me)
-		return (-1);
-	while (!ft_strchr(ptr[a], '\n') && (i = read(a, buffersize, BUFF_SIZE)) > 0)
+	if (!str)
 	{
-		buffersize[i] = '\0';
-		temp = ptr[a];
-		ptr[a] = ft_strjoin(ptr[a], buffersize);
-		ft_strdel(&temp);
+		if (!read)
+			return ((read = ft_strnew(0)));
+		return (read);
 	}
-	if (i == -1 || !*(temp = ptr[a]))
-		return (i == -1 ? -1 : 0);
-	if ((line_end = (ft_strchr(ptr[a], '\n') > 0)))
-		*me = ft_strsub(ptr[a], 0, ft_strchr(ptr[a], '\n') - ptr[a]);
-	else
-		*me = ft_strdup(ptr[a]);
-	ptr[a] = ft_strsub(ptr[a], (unsigned int)(ft_strlen(*me) + line_end),
-			(size_t)(ft_strlen(ptr[a]) - (ft_strlen(*me) + line_end)));
-	ft_strdel(&temp);
-	return (!(!ptr[a] && !ft_strlen(*me)));
+	if (str)
+		return ((read = str));
+	return (NULL);
+}
+
+int		write_into_line(char *ln, char **line, int eof)
+{
+	int i;
+
+	if (!ft_strchr(ln, '\n') && !eof)
+		return (0);
+	i = 0;
+	while (ln[i] && ln[i] != '\n')
+		i++;
+	storing(ft_strdup(&ln[i + 1]));
+	*line = ft_strsub(ln, 0, i);
+	ft_strdel(&ln);
+	return (1);
+}
+
+int		readline(const int fd, char **line)
+{
+	int		rd;
+	char	*tmp;
+	char	*ln;
+	char	buff[BUFF_SIZE + 1];
+
+	ln = storing(NULL);
+	if (write_into_line(ln, line, 0))
+		return (1);
+	while ((rd = read(fd, buff, BUFF_SIZE)))
+	{
+		if (rd < 0)
+			return (-1);
+		buff[rd] = 0;
+		tmp = ft_strjoin(ln, buff);
+		ft_strdel(&ln);
+		ln = tmp;
+		if (write_into_line(ln, line, 0))
+			return (1);
+	}
+	if (write_into_line(ln, line, 1) && ft_strlen(ln))
+		return (1);
+	return (0);
+}
+
+int		get_next_line(const int fd, char **line)
+{
+	if (!line)
+		return (-1);
+	return (readline(fd, line));
 }
